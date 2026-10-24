@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KisanDristi — Smart Pesticide Label Reader</title>
+<meta name="description" content="Scan any pesticide label. Get dose for your tank, waiting period, safety steps and spray-weather check in your own language.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--d:#1f3a1c;--d2:#2c5226;--l:#8fd14f;--bg:#eef3ea;--ink:#16260f;--mut:#6b7d63;--red:#e0452a;--y:#e3b341}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Archivo,'Noto Sans Devanagari',sans-serif;overflow-x:hidden}
+h1,h2,h3{font-weight:800;font-stretch:90%;letter-spacing:-.03em;line-height:.98;margin:0;text-transform:uppercase}
+button,input,select{font:inherit}.pbar{position:fixed;top:0;left:0;height:3px;background:var(--l);width:0;z-index:99}
+nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;padding:10px 12px 10px 22px;border-radius:99px;background:#1f3a1ccc;backdrop-filter:blur(14px);color:#fff;width:min(940px,92vw);justify-content:space-between}
+nav b{font-weight:800;font-size:19px}nav b i{font-style:normal;color:var(--l)}nav a{color:#dfeadb;text-decoration:none;font-size:14px}nav .links{display:flex;gap:22px}
+select{padding:9px 14px;border-radius:99px;border:0;background:#ffffff1f;color:#fff;font-size:14px}select option{color:#000}
+.hero{position:relative;margin:14px;border-radius:38px;height:calc(100vh - 28px);min-height:640px;overflow:hidden;background:var(--d);color:#fff;display:flex;align-items:flex-end}
+.hero .bg{position:absolute;inset:-6% 0;background:var(--d) var(--img) center 30%/cover no-repeat;will-change:transform}.hero .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0c1b09f2 0,#0c1b0990 38%,transparent 72%),linear-gradient(90deg,#0c1b09d0 0,#0c1b0955 48%,transparent 75%)}
+.hero .in{position:relative;z-index:2;padding:0 5vw 6vh;display:flex;justify-content:space-between;align-items:flex-end;width:100%;gap:30px;flex-wrap:wrap}
+.hero h1{font-size:clamp(46px,8.5vw,124px)}.hero h1 em{font-style:normal;color:var(--l)}.hero p{max-width:460px;color:#d7e6d0;margin:20px 0 26px;font-size:18px}
+.badge{display:inline-flex;gap:8px;align-items:center;background:#ffffff1c;backdrop-filter:blur(10px);border:1px solid #ffffff30;border-radius:99px;padding:7px 14px;font-size:13px;margin-bottom:18px}.badge i{width:8px;height:8px;border-radius:50%;background:var(--l);animation:pl 1.6s infinite}@keyframes pl{50%{box-shadow:0 0 0 8px #8fd14f00;opacity:.5}0%{box-shadow:0 0 0 0 #8fd14f88}}
+.go{display:inline-flex;align-items:center;gap:14px;background:var(--l);color:var(--ink);font-weight:700;border:0;border-radius:99px;padding:8px 26px 8px 8px;cursor:pointer;font-size:16px;text-decoration:none;transition:.3s}
+.go u{width:46px;height:46px;border-radius:50%;background:var(--d);color:var(--l);display:grid;place-items:center;text-decoration:none;transition:.3s}.go:hover u{transform:translateX(6px)}.go.g{background:#ffffff22;color:#fff;margin-left:10px;padding:8px 22px}
+/* live scan card */
+.ls{width:290px;background:#ffffff1c;backdrop-filter:blur(18px);border:1px solid #ffffff33;border-radius:26px;padding:14px;animation:fl 5s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-10px)}}
+.ls .lb{position:relative;height:130px;border-radius:16px;background:#fffdf5;overflow:hidden;padding:12px;color:#16260f}.ls .lb b{font-size:13px;display:block}.ls .lb s{display:block;height:6px;border-radius:3px;background:#16260f1f;margin:6px 0;text-decoration:none}.ls .lb .rb{height:22px;border-radius:5px;background:var(--red);margin-top:8px}
+.beam{position:absolute;left:0;right:0;height:34px;background:linear-gradient(180deg,transparent,#8fd14f99,transparent);border-bottom:2px solid var(--l);animation:bm 3s ease-in-out infinite}@keyframes bm{0%{top:-30px}100%{top:130px}}
+.ls .out{display:grid;gap:7px;margin-top:12px}.ls .out div{display:flex;justify-content:space-between;background:#ffffff18;border-radius:12px;padding:9px 12px;font-size:14px;opacity:0;animation:pop 6s infinite}.ls .out div:nth-child(2){animation-delay:.5s}.ls .out div:nth-child(3){animation-delay:1s}.ls .out div:nth-child(4){animation-delay:1.5s}
+@keyframes pop{0%,25%{opacity:0;transform:translateY(12px)}35%,88%{opacity:1;transform:none}100%{opacity:0}}
+.mq{overflow:hidden;white-space:nowrap;padding:26px 0;margin-top:6px}.mq div{display:inline-block;animation:mq 38s linear infinite;font-weight:800;font-size:clamp(26px,4vw,48px);letter-spacing:-.02em;color:var(--d2);opacity:.85}.mq span{margin:0 26px}.mq span:nth-child(even){color:var(--l);-webkit-text-stroke:0}@keyframes mq{to{transform:translateX(-50%)}}
+section{padding:100px 5vw}.cap{max-width:1180px;margin:auto}
+.k{display:inline-block;color:var(--d2);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+h2{font-size:clamp(36px,5.6vw,84px)}.lead{max-width:560px;color:var(--mut);margin-top:18px;font-size:18px}
+.rv{opacity:0;transform:translateY(60px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}.rv.on{opacity:1;transform:none}.d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+/* phones */
+.stage{display:flex;justify-content:center;align-items:flex-start;gap:26px;margin-top:70px;perspective:1400px}
+.ph{width:min(300px,28vw);aspect-ratio:9/17.2;background:#fff;border-radius:40px;padding:9px;box-shadow:0 40px 80px #1f3a1c33;flex:none;will-change:transform}
+.ph>div{height:100%;border-radius:32px;overflow:hidden;position:relative;background:var(--d);color:#fff}.ph:nth-child(2){margin-top:-30px}.ph:nth-child(3){margin-top:30px}
+.scr{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:11px}.scr .t{display:flex;justify-content:space-between;font-size:10px;opacity:.8}.scr .h{font-size:19px;font-weight:800;line-height:1;text-transform:uppercase;letter-spacing:-.02em}
+.pi{width:100%;display:block;border-radius:16px;object-fit:cover}.mini{background:#ffffff1c;border-radius:16px;padding:12px}.mini .big{font-size:36px;font-weight:800;line-height:1}.mini small{opacity:.75}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.row3 div{background:#ffffff14;border-radius:12px;padding:8px;text-align:center}.row3 b{display:block;font-size:14px}
+.pill{display:inline-block;padding:5px 10px;border-radius:99px;background:#ffffff1f;font-size:10px;margin-right:4px}.pill.a{background:var(--l);color:var(--ink);font-weight:700}
+.lab{background:#fff;color:var(--ink);border-radius:14px;padding:10px}.lab h4{margin:0;font-size:12px}.lab div{height:50px;border-radius:9px;background:linear-gradient(135deg,#e0452a,#b32e18);margin-bottom:7px}
+.btm{margin-top:auto;background:var(--l);color:var(--ink);text-align:center;padding:11px;border-radius:99px;font-weight:700}.nav2{margin-top:auto;display:flex;justify-content:space-around;background:#ffffff1c;border-radius:99px;padding:9px;font-size:15px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#fff;border-radius:14px;padding:8px;color:var(--ink);text-align:center;font-size:9px}.tri span{font-size:26px;display:block}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:50px}
+.f{position:relative;background:#fff;border-radius:28px;padding:28px;min-height:240px;overflow:hidden;transition:transform .4s,box-shadow .4s;grid-column:span 2;--x:50%;--y:50%}
+.f:before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--x) var(--y),#8fd14f40,transparent 60%);opacity:0;transition:.3s}.f:hover:before{opacity:1}.f:hover{transform:translateY(-8px);box-shadow:0 30px 60px #1f3a1c22}
+.f.w{grid-column:span 3}.f.dk{background:var(--d);color:#fff}.f.lm{background:var(--l)}.f i{font-style:normal;font-size:36px;display:block;margin-bottom:30px;position:relative}.f b{font-size:22px;letter-spacing:-.02em;position:relative}.f p{color:var(--mut);margin:8px 0 0;position:relative}.f.dk p{color:#cfe0c8}.f.lm p{color:#2c5226}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;position:relative}.tags span{background:#ffffff1c;padding:4px 10px;border-radius:99px;font-size:12px}.f:not(.dk):not(.lm) .tags span{background:var(--bg)}
+/* problem */
+.dk2{background:var(--d);color:#fff;border-radius:38px;margin:0 14px;position:relative;overflow:hidden}.dk2:before{content:"";position:absolute;width:600px;height:600px;right:-200px;top:-200px;background:radial-gradient(#8fd14f33,transparent 65%)}.dk2 .k{color:var(--l)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:50px}.st{background:#ffffff12;border-radius:26px;padding:30px;transition:.4s}.st:hover{background:#ffffff1f;transform:translateY(-8px)}
+.st b{font-size:clamp(50px,6vw,84px);font-weight:800;color:var(--l);line-height:1;display:block}.st span{color:#cfe0c8}
+.per{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}.per div{border:1px solid #ffffff2a;border-radius:22px;padding:22px}.per b{display:block;font-size:20px}.per span{color:#cfe0c8;font-size:15px}
+/* steps */
+.steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:60px}.steps:before{content:"";position:absolute;left:0;right:0;top:34px;height:3px;background:#1f3a1c22}.steps:after{content:"";position:absolute;left:0;top:34px;height:3px;width:var(--p,0%);background:var(--l);transition:width .15s}
+.step{position:relative;padding-top:0}.step .n{width:70px;height:70px;border-radius:50%;background:#fff;border:3px solid #1f3a1c22;display:grid;place-items:center;font-size:28px;position:relative;z-index:1;transition:.4s}.step.on .n{background:var(--l);border-color:var(--l);transform:scale(1.12)}.step b{display:block;font-size:22px;margin:16px 0 4px}.step p{margin:0;color:var(--mut)}
+/* demo app */
+.app{background:var(--d);border-radius:38px;padding:22px;display:grid;grid-template-columns:.85fr 1.15fr;gap:22px;color:#fff;margin-top:50px}
+.card{background:#ffffff14;border-radius:26px;padding:22px;min-width:0}
+.drop{position:relative;display:grid;place-items:center;min-height:270px;border:2px dashed #ffffff55;border-radius:22px;text-align:center;cursor:pointer;padding:16px;overflow:hidden}.drop img{max-width:100%;max-height:250px;border-radius:14px;display:block}.drop.sc:after{content:"";position:absolute;left:0;right:0;height:50px;background:linear-gradient(180deg,transparent,#8fd14f99,transparent);border-bottom:3px solid var(--l);animation:bm2 1.6s ease-in-out infinite}@keyframes bm2{0%{top:-50px}100%{top:100%}}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.btn{border:0;border-radius:99px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer;background:var(--l);color:var(--ink);transition:.2s}.btn:hover{transform:translateY(-2px)}.btn.g{background:#ffffff22;color:#fff}.btn.s{padding:8px 14px;font-size:13px}
+.hist{display:flex;gap:8px;overflow-x:auto;margin-top:16px;padding-bottom:4px}.hist button{flex:none;border:1px solid #ffffff33;background:#ffffff10;color:#fff;border-radius:14px;padding:8px 12px;font-size:12px;cursor:pointer;text-align:left}.hist i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.tabs{display:flex;gap:6px;background:#ffffff14;border-radius:99px;padding:5px;margin-bottom:16px;overflow-x:auto}.tabs button{flex:1;border:0;background:none;color:#fff;border-radius:99px;padding:10px 12px;cursor:pointer;font-weight:700;font-size:14px;white-space:nowrap}.tabs button.on{background:var(--l);color:var(--ink)}
+.pane{display:none}.pane.on{display:block;animation:in .5s}.res{display:none}.res.on{display:block}@keyframes in{from{opacity:0;transform:translateY(18px)}}
+.band{height:9px;border-radius:9px;margin:8px 0 6px}.bandt{font-size:13px;opacity:.85;margin-bottom:12px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kv div{background:#ffffff14;border-radius:16px;padding:12px}.kv small,.lbl{display:block;opacity:.65;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.dose{background:var(--l);color:var(--ink);border-radius:22px;padding:18px;margin-bottom:12px}.dose .big{font-size:56px;font-weight:800;line-height:1}input[type=range]{width:100%;accent-color:var(--d)}
+.tk{height:12px;border-radius:9px;background:#1f3a1c33;overflow:hidden}.tk i{display:block;height:100%;background:var(--d);transition:width .5s}
+.card input[type=number],.card input[type=date],.card input[type=text]{border-radius:12px;border:0;padding:10px 12px;background:#fff;color:var(--ink);min-width:0;width:100%}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{background:#ffffff14;border-radius:18px;padding:14px;margin-bottom:12px}.box .big{font-size:34px;font-weight:800;line-height:1.1}
+.pp{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-bottom:12px}.pp div{background:#fff;color:var(--ink);border-radius:16px;padding:12px 6px;text-align:center;font-size:12px;font-weight:700}.pp span{display:block;font-size:30px}
+.warn{background:#e0452a33;border-left:4px solid #ff7a5c;padding:9px 12px;border-radius:10px;margin:6px 0;font-size:14px}
+.verdict{border-radius:16px;padding:14px;margin-top:10px}.verdict.ok{background:#4fa26533;border:1px solid #4fa265}.verdict.no{background:#e0452a33;border:1px solid #ff7a5c}.verdict.mid{background:#e3b34133;border:1px solid var(--y)}
+.msgs{max-height:200px;overflow:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:10px}.m{padding:9px 13px;border-radius:16px;font-size:14px;max-width:88%}.m.u{background:var(--l);color:var(--ink);align-self:flex-end}.m.a{background:#ffffff1f}
+.note{border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:14px;display:none}.note.on{display:block}.note.i{background:#e3b34133;border:1px solid var(--y)}.note.e{background:#e0452a33;border:1px solid #ff7a5c}
+.spin{display:none;align-items:center;gap:12px;padding:40px 0}.spin.on{display:flex}.spin i{width:22px;height:22px;border:3px solid #ffffff44;border-top-color:var(--l);border-radius:50%;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+.modal{position:fixed;inset:0;background:#0c1b09ee;z-index:200;display:none;place-items:center;padding:20px}.modal.on{display:grid}.modal .bx{width:min(560px,100%);color:#fff;text-align:center}
+.vf{position:relative;border-radius:20px;overflow:hidden;background:#000}.vf video{width:100%;display:block;max-height:60vh;object-fit:cover}.vf:after{content:"";position:absolute;inset:12%;border:3px solid var(--l);border-radius:16px;box-shadow:0 0 0 999px #0006;pointer-events:none}
+.sos{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--red);color:#fff;border-radius:99px;padding:12px 18px;font-weight:800;text-decoration:none;box-shadow:0 10px 30px #e0452a66;font-size:14px}
+footer{text-align:center;padding:90px 5vw 50px}footer h2{font-size:clamp(34px,6vw,90px)}footer a{color:var(--d2);font-weight:700}
+@media(max-width:860px){nav .links{display:none}.stage{flex-direction:column;align-items:center}.ph{width:280px;margin:0!important}.stats,.per,.app,.steps{grid-template-columns:1fr}.bento{grid-template-columns:1fr}.f,.f.w{grid-column:span 1}.steps:before,.steps:after{display:none}section{padding:70px 5vw}.ls{display:none}.hero .bg{background-position:27% 30%}.hero .bg video{object-position:27% 50%}}
+</style></head><body>
+<div class="pbar" id="bar"></div>
+<nav><b>Kisan<i>Dristi</i></b><div class="links"><a href="#screens">App</a><a href="#features">Features</a><a href="#problem">Why</a><a href="#demo">Try it</a></div>
+<select id="lang" aria-label="Language"><option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option><option value="pa">ਪੰਜਾਬੀ</option><option value="ta">தமிழ்</option><option value="te">తెలుగు</option></select></nav>
+
+<header class="hero" style="--img:url(static/hero.jpg)">
+<div class="bg" id="art"><video id="hv" autoplay muted loop playsinline preload="auto" poster="static/hero.jpg"><source src="static/hero.mp4" type="video/mp4"></video></div>
+<div class="in"><div><div class="badge rv on"><i></i><span data-i="bd">Gemini-powered · 7 Indian languages · Free</span></div>
+<h1 class="rv on d1" data-i="h1">Your label,<br><em>simpler.</em></h1><p class="rv on d2" data-i="sub">Scan any pesticide label. Get the right dose for your tank, the waiting period and safety steps — spoken in your own language.</p>
+<div class="rv on d3"><a class="go" href="#demo"><u>→</u><span data-i="cta">Scan a label</span></a><a class="go g" href="#features" data-i="more">See features</a></div></div>
+<div class="ls"><div class="lb"><div class="beam"></div><b>CHLORPYRIFOS 20% EC</b><s></s><s style="width:70%"></s><s style="width:85%"></s><div class="rb"></div></div>
+<div class="out"><div><span>💧 Dose · 15 L</span><b>30 ml</b></div><div><span>⏳ Wait</span><b>21 days</b></div><div><span>🧤 Gear</span><b>3 items</b></div><div><span>🔊 Voice</span><b>हिंदी</b></div></div></div></div></header>
+<div class="mq"><div><span>हिंदी</span><span>•</span><span>मराठी</span><span>•</span><span>ગુજરાતી</span><span>•</span><span>ਪੰਜਾਬੀ</span><span>•</span><span>தமிழ்</span><span>•</span><span>తెలుగు</span><span>•</span><span>English</span><span>•</span><span>हिंदी</span><span>•</span><span>मराठी</span><span>•</span><span>ગુજરાતી</span><span>•</span><span>ਪੰਜਾਬੀ</span><span>•</span><span>தமிழ்</span><span>•</span><span>తెలుగు</span><span>•</span><span>English</span><span>•</span></div></div>
+
+<section id="screens"><div class="cap"><span class="k rv">The app</span><h2 class="rv d1" data-i="s_h">Your farm, safer.</h2><p class="lead rv d2" data-i="s_p">Three taps from a confusing label to a clear spoken answer.</p>
+<div class="stage" id="stage">
+<div class="ph"><div><div class="scr"><div class="t"><span>9:41</span><span>●●●</span></div><img class="pi" src="static/phone1.jpg" alt="Pesticide label" style="aspect-ratio:1/1"><div class="h">Scan.<br>Understand.<br>Spray safe.</div><div style="opacity:.8">Dose, waiting period and safety in your language.</div><div class="btm">Get Started →</div></div></div></div>
+<div class="ph"><div><div class="scr"><div class="t"><span>9:41</span><span>●●●</span></div><b style="font-size:13px">Namaste, Kisan 👋</b>
+<div class="mini"><small>Chlorpyrifos 20% EC</small><div class="big">30 ml</div><small>per 15 L tank</small></div><div class="row3"><div><b>21d</b>Wait</div><div><b>Red</b>Hazard</div><div><b>15L</b>Tank</div></div>
+<div><span class="pill a">All</span><span class="pill">Insect</span><span class="pill">Fungi</span></div><div class="lab"><div></div><h4>Cotton · Bollworm</h4><span style="color:var(--mut)">2 ml / litre</span></div>
+<div class="mini" style="display:flex;justify-content:space-between"><span>🔊 Listen in Hindi</span><b>▶</b></div><div class="nav2"><span>🏠</span><span>📷</span><span>💬</span><span>📞</span></div></div></div></div>
+<div class="ph"><div><div class="scr"><div class="t"><span>9:41</span><span>My Label</span></div><img class="pi" src="static/phone3.jpg" alt="Product pack" style="aspect-ratio:16/10;object-position:50% 40%"><div class="tri"><div><span>🔥</span>Flammable</div><div><span>☠️</span>Toxic</div><div><span>💥</span>Hazard</div></div>
+<div class="mini" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><small>Toxicity</small><div class="big" style="font-size:22px">RED</div></div><div><small>Tank</small><div class="big" style="font-size:22px">15L</div></div><div><small>Wait</small><div class="big" style="font-size:22px">21d</div></div><div><small>Risk</small><div class="big" style="font-size:22px">High</div></div></div><div class="btm">Listen 🔊</div></div></div></div>
+</div></div></section>
+
+<section id="features" style="padding-top:20px"><div class="cap"><span class="k rv">Features</span><h2 class="rv d1" data-i="f_h">Built for the<br>field, not the lab.</h2>
+<div class="bento">
+<div class="f dk rv"><i>📷</i><b>Live camera scan</b><p>Point, capture, done. Photos are auto-resized so it works on slow 4G.</p><div class="tags"><span>Camera</span><span>Upload</span><span>Gemini vision</span></div></div>
+<div class="f rv d1"><i>🌐</i><b>7 languages, spoken</b><p>Hindi, Marathi, Gujarati, Punjabi, Tamil, Telugu, English — with voice read-out for low-literacy users.</p></div>
+<div class="f lm rv d2"><i>🧪</i><b>Exact tank dose</b><p>Slide 5–25 L and see ml per tank. Acre mode counts how many tanks you need.</p></div>
+<div class="f w rv"><i>🌦️</i><b>Is it safe to spray now?</b><p>Checks wind, rain chance and heat at your location and tells you to spray or wait.</p><div class="tags"><span>Wind</span><span>Rain</span><span>Heat</span></div></div>
+<div class="f w dk rv d1"><i>📅</i><b>Safe harvest date</b><p>Pick your spray date. We add the waiting period and show the first day it is safe to harvest.</p></div>
+<div class="f rv"><i>🧤</i><b>Icon-first safety</b><p>Gloves, mask, boots, no-wind — big pictures, not paragraphs.</p></div>
+<div class="f rv d1"><i>📲</i><b>Share on WhatsApp</b><p>Send the summary to workers or neighbours in one tap.</p></div>
+<div class="f rv d2"><i>🕘</i><b>Scan history</b><p>Your last labels are saved on your phone, even offline.</p></div>
+</div></div></section>
+
+<section id="problem" class="dk2"><div class="cap" style="position:relative"><span class="k rv" data-i="p_k">The problem</span><h2 class="rv d1" data-i="p_h">Labels nobody<br>can read.</h2><p class="lead rv d2" style="color:#cfe0c8" data-i="p_p">Dense, English-heavy and full of jargon. One misread line means illness, burnt crops or wasted money.</p>
+<div class="stats"><div class="st rv"><b data-n="33" data-s="%">0</b><span>of farmers report losses or health issues from confusing labels (1 in 3)</span></div><div class="st rv d1"><b data-n="7" data-s="">0</b><span>Indian languages with spoken guidance</span></div><div class="st rv d2"><b data-n="3" data-s="">0</b><span>taps from photo to answer</span></div></div>
+<div class="per"><div class="rv"><b>🌾 Small farmers</b><span>Plain language, big icons, voice.</span></div><div class="rv d1"><b>👷 Farm workers</b><span>Safety steps and PPE at a glance, shareable on WhatsApp.</span></div><div class="rv d2"><b>🏪 Agri-shop staff</b><span>Explain any product to a customer in seconds.</span></div></div></div></section>
+
+<section><div class="cap"><span class="k rv">How it works</span><h2 class="rv d1" data-i="h_h">Scan. Translate.<br>Understand. Act.</h2>
+<div class="steps" id="steps"><div class="step"><div class="n">📷</div><b>Scan</b><p>Photo of any label.</p></div><div class="step"><div class="n">🌐</div><b>Translate</b><p>Gemini reads it in your language.</p></div><div class="step"><div class="n">🧪</div><b>Understand</b><p>Dose, wait, safety, weather.</p></div><div class="step"><div class="n">🔊</div><b>Act</b><p>Listen, share, call helpline.</p></div></div></div></section>
+
+<section id="demo" style="padding-top:20px"><div class="cap"><span class="k rv">Live demo</span><h2 class="rv d1" data-i="d_h">Try it now</h2><p class="lead rv d2" id="mode"></p>
+<div class="app rv">
+<div class="card"><div class="drop" id="drop"><div id="dz"><div style="font-size:48px">📷</div><b data-i="up">Scan or upload a label</b><div style="opacity:.7;font-size:13px;margin-top:6px">Fill the frame · good light · no glare</div></div></div>
+<input type="file" id="file" accept="image/*" hidden><input type="file" id="file2" accept="image/*" capture="environment" hidden>
+<div class="row"><button class="btn" id="cambtn">📷 <span data-i="cam">Scan with camera</span></button><button class="btn g" id="upbtn">📁 <span data-i="upl">Upload</span></button><button class="btn g" id="sample" data-i="smp">Use sample</button></div>
+<div class="lbl" style="margin-top:20px" data-i="hs">Recent scans</div><div class="hist" id="hist"></div></div>
+<div class="card"><div class="note" id="note"></div><div class="spin" id="spin"><i></i><span data-i="rd">Reading your label…</span></div><div id="idle" style="opacity:.7;padding:40px 0" data-i="idle">Your label explanation will appear here.</div>
+<div class="res" id="res"><div class="tabs" id="tabs"><button class="on" data-t="ov" data-i="t1">Overview</button><button data-t="dz2" data-i="t2">Dose</button><button data-t="sf" data-i="t3">Safety</button><button data-t="as" data-i="t4">Ask AI</button></div>
+<div class="pane on" id="ov"><div id="pn" style="font-size:28px;font-weight:800;text-transform:uppercase;letter-spacing:-.02em"></div><div class="band" id="bd"></div><div class="bandt" id="bt"></div>
+<div class="kv"><div><small data-i="crop">Crop</small><b id="cr"></b></div><div><small data-i="pest">Pest</small><b id="ps"></b></div><div><small data-i="wait">Waiting period</small><b id="wt"></b></div><div><small data-i="dpl">Dose per litre</small><b id="dl"></b></div></div>
+<p id="sm" style="margin:14px 0 4px"></p><div class="row" style="margin-top:6px"><button class="btn" id="say">🔊 <span data-i="listen">Listen</span></button><button class="btn g" id="wa">📲 WhatsApp</button><button class="btn g" id="copy">📋 <span data-i="cpy">Copy</span></button></div></div>
+<div class="pane" id="dz2"><div class="dose"><span class="lbl" data-i="tk">TANK (LITRES)</span><div style="display:flex;justify-content:space-between;align-items:end"><div><span class="big" id="ao">–</span> <b>ml</b></div><b><span id="tv">15</span> L</b></div><input type="range" id="tank" min="5" max="25" value="15"><div class="tk"><i id="tf"></i></div><div style="margin-top:6px;font-size:13px" id="dn"></div></div>
+<div class="box"><span class="lbl" data-i="ac">Whole field</span><div class="g2" style="margin:8px 0"><div><small>Acres</small><input type="number" id="acres" min=".25" step=".25" value="1"></div><div><small>Water L / acre</small><input type="number" id="wpa" min="50" step="10" value="200"></div></div><div class="g2"><div><span class="big" id="tanks">–</span><div class="lbl" data-i="tn">tanks to fill</div></div><div><span class="big" id="tot">–</span><div class="lbl" data-i="tm">total pesticide</div></div></div><div style="font-size:12px;opacity:.7;margin-top:6px">Typical knapsack spray volume — check the label.</div></div>
+<div class="box"><span class="lbl" data-i="hv">Safe harvest date</span><div class="g2" style="margin:8px 0"><div><small data-i="sd">Spray date</small><input type="date" id="sdate"></div><div><span class="big" id="hdate">–</span><div class="lbl" id="hleft"></div></div></div></div></div>
+<div class="pane" id="sf"><div class="pp" id="pp"></div><div id="wr"></div>
+<div class="box"><span class="lbl" data-i="wx">Spray weather check</span><div class="row" style="margin-top:8px"><button class="btn s" id="wxbtn">📍 <span data-i="wxb">Check my location</span></button></div><div id="wxout"></div></div></div>
+<div class="pane" id="as"><div class="msgs" id="msgs"></div><div class="g2" style="grid-template-columns:1fr auto auto;gap:8px"><input type="text" id="q" placeholder="Ask Kisan Mitra…"><button class="btn s" id="mic">🎤</button><button class="btn s" id="ask">➤</button></div>
+<div class="row"><button class="btn g s q" data-q="Best time to spray?">🕒 Timing</button><button class="btn g s q" data-q="What if it rains after spraying?">🌦️ Rain</button><button class="btn g s q" data-q="Can I mix it with other chemicals?">🧪 Mixing</button><button class="btn g s q" data-q="What first aid if I feel sick after spraying?">🚑 First aid</button></div></div>
+</div></div></div></div></section>
+
+<div class="modal" id="cam"><div class="bx"><div class="vf"><video id="cv" autoplay playsinline muted></video></div><p data-i="cp">Fit the label inside the green frame</p><div class="row" style="justify-content:center"><button class="btn" id="snap">● <span data-i="cap">Capture</span></button><button class="btn g" id="cclose">✕</button></div></div></div>
+<a class="sos" href="tel:18001801551">📞 Kisan Helpline 1800-180-1551</a>
+<footer><h2 class="rv">Clear labels today.<br>Safer farms tomorrow.</h2><p class="rv d1">Kisan Call Centre <a href="tel:18001801551">1800-180-1551</a> · Poisons Info Centre <a href="tel:1800116117">1800-116-117</a></p><small style="color:var(--mut)">Always verify with the printed label · KisanDristi · Hacktoberfest · MIT</small></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const T={hi:{bd:'Gemini · 7 भारतीय भाषाएँ · मुफ़्त',h1:'आपका लेबल,<br><em>अब आसान।</em>',sub:'किसी भी कीटनाशक लेबल को स्कैन करें। टंकी की सही मात्रा, प्रतीक्षा अवधि और सुरक्षा अपनी भाषा में सुनें।',cta:'लेबल स्कैन करें',more:'सुविधाएँ देखें',s_h:'आपका खेत, सुरक्षित।',f_h:'खेत के लिए बना,<br>प्रयोगशाला के लिए नहीं।',p_k:'समस्या',p_h:'ऐसे लेबल जो<br>कोई न पढ़ सके।',p_p:'घने, अंग्रेज़ी में, कठिन शब्दों से भरे। एक गलत पंक्ति = बीमारी, जली फसल या बर्बाद पैसा।',h_h:'स्कैन। अनुवाद।<br>समझ। अमल।',d_h:'अभी आज़माएँ',up:'लेबल स्कैन या अपलोड करें',cam:'कैमरे से स्कैन करें',upl:'अपलोड',smp:'नमूना',hs:'हाल के स्कैन',rd:'लेबल पढ़ रहे हैं…',cap:'कैप्चर',cp:'लेबल को हरे फ्रेम में रखें',idle:'लेबल की जानकारी यहाँ दिखेगी।',t1:'सारांश',t2:'मात्रा',t3:'सुरक्षा',t4:'AI से पूछें',crop:'फसल',pest:'कीट',wait:'प्रतीक्षा अवधि',dpl:'प्रति लीटर मात्रा',listen:'सुनें',cpy:'कॉपी',tk:'टंकी (लीटर)',ac:'पूरा खेत',tn:'टंकी भरनी होंगी',tm:'कुल दवा',hv:'कटाई की सुरक्षित तारीख',sd:'छिड़काव की तारीख',wx:'छिड़काव मौसम जाँच',wxb:'मेरी लोकेशन जाँचें',days:'दिन'},
+mr:{bd:'Gemini · 7 भारतीय भाषा · मोफत',h1:'तुमचे लेबल,<br><em>आता सोपे.</em>',sub:'कोणतेही कीटकनाशक लेबल स्कॅन करा. टाकीचे प्रमाण, प्रतीक्षा कालावधी आणि सुरक्षा तुमच्या भाषेत ऐका.',cta:'लेबल स्कॅन करा',more:'वैशिष्ट्ये पहा',s_h:'तुमची शेती, सुरक्षित.',p_h:'कोणालाच न वाचता<br>येणारी लेबले.',h_h:'स्कॅन. भाषांतर.<br>समजा. कृती.',d_h:'आत्ताच वापरा',up:'लेबल स्कॅन किंवा अपलोड करा',cam:'कॅमेऱ्याने स्कॅन करा',upl:'अपलोड',smp:'नमुना',hs:'अलीकडील स्कॅन',rd:'लेबल वाचत आहे…',cap:'कॅप्चर',cp:'लेबल हिरव्या चौकटीत ठेवा',idle:'लेबलची माहिती येथे दिसेल.',t1:'सारांश',t2:'प्रमाण',t3:'सुरक्षा',t4:'AI ला विचारा',crop:'पीक',pest:'कीड',wait:'प्रतीक्षा कालावधी',dpl:'प्रति लिटर प्रमाण',listen:'ऐका',cpy:'कॉपी',tk:'टाकी (लिटर)',ac:'संपूर्ण शेत',tn:'टाक्या भराव्या',tm:'एकूण औषध',hv:'काढणीची सुरक्षित तारीख',sd:'फवारणी तारीख',wx:'फवारणी हवामान तपासणी',wxb:'माझे ठिकाण तपासा',days:'दिवस'}};
+const EN={};$$('[data-i]').forEach(e=>EN[e.dataset.i]=e.innerHTML);
+const tr=k=>(T[lang()]&&T[lang()][k])||EN[k]||k;
+$('#lang').onchange=()=>{$$('[data-i]').forEach(x=>x.innerHTML=tr(x.dataset.i));document.documentElement.lang=lang();L&&show(L,true)};
+const BAND={red:['#e0452a',['Extremely toxic (red band)','अत्यंत ज़हरीली (लाल)','अत्यंत विषारी (लाल)']],yellow:['#e3b341',['Highly toxic (yellow band)','बहुत ज़हरीली (पीला)','अत्यंत विषारी (पिवळा)']],blue:['#6b8dd1',['Moderately toxic (blue band)','मध्यम ज़हरीली (नीला)','मध्यम विषारी (निळा)']],green:['#4fa265',['Slightly toxic (green band)','कम ज़हरीली (हरा)','सौम्य विषारी (हिरवा)']]};
+const IC={gloves:['🧤','Gloves','दस्ताने','हातमोजे'],mask:['😷','Mask','मास्क','मास्क'],goggles:['🥽','Goggles','चश्मा','गॉगल'],boots:['🥾','Boots','जूते','बूट'],sleeves:['👕','Full sleeves','पूरी बाँह','पूर्ण बाह्या'],wash:['🧼','Wash hands','हाथ धोएँ','हात धुवा'],no_eat:['🚫🍽️','No eating','खाना मना','खाणे नको'],keep_children:['👶','Keep from children','बच्चों से दूर','मुलांपासून दूर'],no_wind:['💨','Not against wind','हवा के विपरीत नहीं','वाऱ्याविरुद्ध नको']};
+const li=()=>({hi:2,mr:3}[lang()]||1);
+const SAMPLE={en:{product:'Chlorpyrifos 20% EC',toxicity_color:'red',crop:'Cotton, Paddy, Vegetables',pest:'Bollworm, Stem borer, Fruit borer',dose_per_litre_ml:2,dose_note:'2 ml per litre of water',waiting_days:21,ppe_codes:['gloves','mask','sleeves','wash','no_eat','keep_children','no_wind'],warnings:['Highly toxic – keep away from children','Do not spray against the wind','Not for food, feed or oil use'],summary:'This is a red-band, highly toxic insecticide. Mix 2 ml in every litre of water. Wait 21 days before harvest. Wear gloves and a mask.'},
+hi:{product:'क्लोरोपायरीफॉस 20% ई.सी.',toxicity_color:'red',crop:'कपास, धान, सब्ज़ियाँ',pest:'इल्ली, तना छेदक, फल छेदक',dose_per_litre_ml:2,dose_note:'2 मिली प्रति लीटर पानी',waiting_days:21,ppe_codes:['gloves','mask','sleeves','wash','no_eat','keep_children','no_wind'],warnings:['बहुत ज़हरीली – बच्चों से दूर रखें','हवा के विपरीत छिड़काव न करें','खाद्य, चारे या तेल के लिए नहीं'],summary:'यह लाल पट्टी वाली बहुत ज़हरीली दवा है। हर एक लीटर पानी में 2 मिली मिलाएँ। कटाई से 21 दिन पहले छिड़काव बंद करें। दस्ताने और मास्क पहनें।'},
+mr:{product:'क्लोरपायरीफॉस 20% ई.सी.',toxicity_color:'red',crop:'कापूस, भात, भाजीपाला',pest:'बोंडअळी, खोडकिडा, फळ पोखरणारी अळी',dose_per_litre_ml:2,dose_note:'2 मिली प्रति लिटर पाणी',waiting_days:21,ppe_codes:['gloves','mask','sleeves','wash','no_eat','keep_children','no_wind'],warnings:['अत्यंत विषारी – मुलांपासून दूर ठेवा','वाऱ्याच्या दिशेने फवारू नका','अन्न/चारा/तेलासाठी नाही'],summary:'ही लाल पट्टीची अत्यंत विषारी औषध आहे. प्रत्येक लिटर पाण्यात 2 मिली मिसळा. काढणीपूर्वी 21 दिवस थांबा. हातमोजे व मास्क वापरा.'}};
+const CAN={en:'Spray in the morning before 9 AM or after 4 PM. Keep a 3–4 hour dry gap before rain. Do not mix with other chemicals unless the label says so. For doubts call 1800-180-1551.',hi:'सुबह 9 बजे से पहले या शाम 4 बजे के बाद छिड़कें। बारिश से 3–4 घंटे पहले छिड़काव करें। लेबल में न लिखा हो तो दूसरी दवा न मिलाएँ। शंका हो तो 1800-180-1551 पर कॉल करें।',mr:'सकाळी 9 पूर्वी किंवा दुपारी 4 नंतर फवारा. पावसाच्या 3–4 तास आधी फवारा. लेबलवर नसल्यास दुसरे औषध मिसळू नका. शंका असल्यास 1800-180-1551 वर कॉल करा.'};
+let L=null,file=null;const lang=()=>$('#lang').value;
+const fmt=n=>n==null?'–':(Math.round(n*10)/10).toString();
+function show(d,keep){L=d;$('#spin').classList.remove('on');$('#idle').style.display='none';$('#res').classList.add('on');
+ const bnd=BAND[d.toxicity_color]||BAND.red;$('#pn').textContent=d.product||'';$('#bd').style.background=bnd[0];$('#bt').textContent=bnd[1][li()-1]||bnd[1][0];
+ $('#cr').textContent=d.crop||'–';$('#ps').textContent=d.pest||'–';$('#wt').textContent=d.waiting_days!=null?d.waiting_days+' '+tr('days'):'–';$('#dl').textContent=d.dose_per_litre_ml!=null?d.dose_per_litre_ml+' ml/L':'–';
+ $('#sm').textContent=d.summary||'';$('#dn').textContent=d.dose_note||'';
+ $('#pp').innerHTML=(d.ppe_codes||[]).filter(c=>IC[c]).map(c=>`<div><span>${IC[c][0]}</span>${IC[c][li()]||IC[c][1]}</div>`).join('');
+ $('#wr').innerHTML=(d.warnings||[]).map(w=>`<div class="warn">⚠️ ${w}</div>`).join('');calc();harvest();if(!keep)saveHist(d)}
+function calc(){const t=+$('#tank').value,d=L&&L.dose_per_litre_ml;$('#tv').textContent=t;$('#tf').style.width=t/25*100+'%';$('#ao').textContent=d?fmt(d*t):'–';
+ const a=+$('#acres').value||0,w=+$('#wpa').value||0;$('#tanks').textContent=d&&t?Math.ceil(a*w/t):'–';const tot=d?d*a*w:null;$('#tot').textContent=tot==null?'–':tot>=1000?fmt(tot/1000)+' L':fmt(tot)+' ml'}
+function harvest(){const w=L&&L.waiting_days,v=$('#sdate').value;if(w==null||!v){$('#hdate').textContent='–';$('#hleft').textContent='';return}const dt=new Date(v);dt.setDate(dt.getDate()+ +w);$('#hdate').textContent=dt.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});const left=Math.ceil((dt-new Date())/864e5);$('#hleft').textContent=left>0?left+' '+tr('days')+' →':'✔ OK'}
+$('#sdate').value=new Date().toISOString().slice(0,10);['tank','acres','wpa'].forEach(i=>$('#'+i).oninput=calc);$('#sdate').oninput=harvest;
+$$('#tabs button').forEach(b=>b.onclick=()=>{$$('#tabs button').forEach(x=>x.classList.toggle('on',x==b));$$('.pane').forEach(p=>p.classList.toggle('on',p.id==b.dataset.t))});
+/* history */
+const hist=()=>{try{return JSON.parse(localStorage.kd||'[]')}catch{return[]}};
+function saveHist(d){try{const h=hist().filter(x=>x.product!==d.product);h.unshift(d);localStorage.kd=JSON.stringify(h.slice(0,6))}catch{}drawHist()}
+function drawHist(){const h=hist();$('#hist').innerHTML=h.length?h.map((d,i)=>`<button data-i="${i}"><i style="background:${(BAND[d.toxicity_color]||BAND.red)[0]}"></i>${d.product}</button>`).join(''):'<span style="opacity:.5;font-size:13px">—</span>';$$('#hist button').forEach(b=>b.onclick=()=>{note('');show(hist()[b.dataset.i],true)})}drawHist();
+/* notes, loading */
+const note=(m,t='i')=>{const n=$('#note');n.className='note '+(m?'on '+t:'');n.textContent=m||''};
+const busy=v=>{$('#spin').classList.toggle('on',v);$('#drop').classList.toggle('sc',v);if(v){$('#idle').style.display='none';$('#res').classList.remove('on');note('')}};
+/* capture / upload */
+async function prep(f){try{const b=await createImageBitmap(f),k=Math.min(1,1600/Math.max(b.width,b.height)),c=document.createElement('canvas');c.width=Math.round(b.width*k);c.height=Math.round(b.height*k);c.getContext('2d').drawImage(b,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.88))}catch{return f}}
+async function setFile(f){if(!f)return;file=await prep(f);$('#dz').innerHTML=`<img src="${URL.createObjectURL(file)}">`;analyze()}
+function demo(m){note(m,'i');show(SAMPLE[lang()]||SAMPLE.en,true)}
+function fail(m){note(m,'e');$('#spin').classList.remove('on');$('#idle').style.display='block'}
+async function analyze(){if(!file)return;busy(true);const f=new FormData();f.append('image',file,'label.jpg');f.append('lang',lang());
+ try{const r=await fetch('/api/analyze',{method:'POST',body:f}),j=await r.json().catch(()=>({}));
+  if(r.ok&&j.is_label!==false&&j.product){show(j)}
+  else if(r.ok&&j.is_label===false)fail('No pesticide label found in this photo. Retake it closer, in good light.')
+  else if(j.error==='no_key')demo('Demo mode: add GEMINI_API_KEY to .env to read your own label. This is a sample, not your photo.')
+  else fail('Could not read the label'+(j.detail?' ('+j.detail+')':'')+'. Please try again.')}
+ catch{demo('Server not reachable (static page). This is a sample, not your photo.')}
+ busy(false)}
+$('#file').onchange=e=>setFile(e.target.files[0]);$('#file2').onchange=e=>setFile(e.target.files[0]);$('#upbtn').onclick=()=>$('#file').click();$('#drop').onclick=()=>$('#upbtn').click();
+$('#sample').onclick=()=>{$('#dz').innerHTML='<div style="font-size:48px">🧴</div><b>Chlorpyrifos 20% EC</b>';file=null;note('Sample label – not your photo.');show(SAMPLE[lang()]||SAMPLE.en,true)};
+let stream=null;const stopCam=()=>{stream&&stream.getTracks().forEach(t=>t.stop());stream=null;$('#cam').classList.remove('on')};
+$('#cambtn').onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia)return $('#file2').click();
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});$('#cv').srcObject=stream;$('#cam').classList.add('on')}catch{note('Camera blocked or unavailable – choose a photo instead.','e');$('#file2').click()}};
+$('#snap').onclick=()=>{const v=$('#cv'),c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);c.toBlob(b=>{stopCam();setFile(b)},'image/jpeg',.9)};$('#cclose').onclick=stopCam;
+/* voice, share */
+const VL={hi:'hi-IN',mr:'mr-IN',en:'en-IN',gu:'gu-IN',pa:'pa-IN',ta:'ta-IN',te:'te-IN'};
+const speak=t=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=VL[lang()];speechSynthesis.speak(u)};$('#say').onclick=()=>L&&speak(L.summary);
+const msg=()=>L?`🌿 KisanDristi\n${L.product}\n💧 ${L.dose_note||L.dose_per_litre_ml+' ml/L'}\n⏳ ${tr('wait')}: ${L.waiting_days??'–'} ${tr('days')}\n${(L.warnings||[]).map(w=>'⚠️ '+w).join('\n')}\n\n${L.summary||''}\n(Verify with the printed label. Helpline 1800-180-1551)`:'';
+$('#wa').onclick=()=>L&&window.open('https://wa.me/?text='+encodeURIComponent(msg()),'_blank');
+$('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(msg());$('#copy').textContent='✔'}catch{}};
+/* chat */
+const add=(c,t)=>{const m=document.createElement('div');m.className='m '+c;m.textContent=t;$('#msgs').append(m);$('#msgs').scrollTop=1e9};
+async function ask(q){if(!q)return;add('u',q);$('#q').value='';let a;try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q,lang:lang(),label:L})});if(!r.ok)throw 0;a=(await r.json()).answer}catch{a=CAN[lang()]||CAN.en}add('a',a);speak(a)}
+$('#ask').onclick=()=>ask($('#q').value);$('#q').onkeydown=e=>e.key=='Enter'&&ask(e.target.value);$$('.q').forEach(b=>b.onclick=()=>ask(b.dataset.q));
+$('#mic').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return note('Voice input is not supported in this browser.','e');const r=new R();r.lang=VL[lang()];r.onresult=e=>ask(e.results[0][0].transcript);r.start()};
+/* spray weather (Open-Meteo, no key) */
+$('#wxbtn').onclick=()=>{const o=$('#wxout');o.innerHTML='…';navigator.geolocation?navigator.geolocation.getCurrentPosition(async p=>{try{const {latitude:a,longitude:b}=p.coords,r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${a}&longitude=${b}&current=temperature_2m,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=auto`),j=await r.json();
+ const w=j.current.wind_speed_10m,t=j.current.temperature_2m,h=new Date().getHours(),rain=Math.max(...j.hourly.precipitation_probability.slice(h,h+4));
+ const bad=[];w>15&&bad.push('wind');rain>40&&bad.push('rain');t>35&&bad.push('heat');const mid=!bad.length&&(w>10||rain>20||t>32||(h>=10&&h<16));
+ const c=bad.length?'no':mid?'mid':'ok',txt=bad.length?'❌ Wait – too much '+bad.join(' & ')+'.':mid?'⚠️ Possible, but better early morning or evening.':'✅ Good time to spray.';
+ o.innerHTML=`<div class="verdict ${c}"><b>${txt}</b><br><small>Wind ${w} km/h · Rain chance ${rain}% · ${t}°C</small></div>`}catch{o.innerHTML='<div class="verdict mid">Could not load weather. Rule of thumb: spray before 9 AM or after 4 PM, wind under 10 km/h, no rain for 4 hours.</div>'}},()=>o.innerHTML='<div class="verdict mid">Location blocked. Rule of thumb: spray before 9 AM or after 4 PM, wind under 10 km/h, no rain for 4 hours.</div>'):0};
+fetch('/api/status').then(r=>r.json()).then(s=>$('#mode').textContent=s.live?'🟢 Live: Gemini 2.5 Flash':'🟡 Demo mode – add GEMINI_API_KEY for live reading').catch(()=>$('#mode').textContent='🟡 Demo mode (static)');
+/* scroll effects */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');const n=e.target.querySelector('[data-n]');if(n&&!n.d){n.d=1;const to=+n.dataset.n,t0=performance.now();(function f(t){const p=Math.min((t-t0)/1400,1);n.textContent=Math.round(to*(1-Math.pow(1-p,3)))+n.dataset.s;p<1&&requestAnimationFrame(f)})(t0)}}}),{threshold:.2});$$('.rv').forEach(e=>io.observe(e));
+$$('.f').forEach(c=>c.onmousemove=e=>{const r=c.getBoundingClientRect();c.style.setProperty('--x',e.clientX-r.left+'px');c.style.setProperty('--y',e.clientY-r.top+'px')});
+addEventListener('scroll',()=>{const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;$('#bar').style.width=y/h*100+'%';$('#art').style.transform=`translateY(${Math.min(y,innerHeight)*.12}px)`;
+const r=$('#stage').getBoundingClientRect(),p=Math.max(0,Math.min(1,1-r.top/innerHeight));$$('.ph').forEach((e,i)=>{e.style.transform=`translateY(${(1-p)*(100+i*40)}px) rotate(${(i-1)*(1-p)*8}deg)`;e.style.opacity=.3+p*.7});
+const s=$('#steps').getBoundingClientRect(),q=Math.max(0,Math.min(1,(innerHeight*.85-s.top)/(s.height+innerHeight*.3)));$('#steps').style.setProperty('--p',q*100+'%');$$('.step').forEach((e,i)=>e.classList.toggle('on',q>(i+.2)/4*.9))},{passive:true});dispatchEvent(new Event('scroll'));
+</script></body></html>
